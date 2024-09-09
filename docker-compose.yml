@@ -1,0 +1,37 @@
+version: '3.3'
+
+services:
+  history:
+      build: ./history
+      container_name: history_server_app
+      command: npm run start
+      restart: unless-stopped
+      env_file: .env
+      ports:
+      - "3001:3001"
+      depends_on:
+        - postgres_service
+
+  shop:
+    build: ./shop
+    container_name: shop_server_app
+    command: npm run start
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres_service
+      - history
+
+  postgres_service:
+    image: postgres:12-alpine
+    container_name: shop_postgres
+    env_file: .env
+    volumes:
+      - pgdb:/data/db
+    ports:
+      - '5557:5432'
+
+volumes:
+  pgdb:
